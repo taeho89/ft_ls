@@ -1,5 +1,6 @@
 #include "../includes/allocator.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void	*ft_malloc(int size) {
 	t_header	*header;
@@ -27,7 +28,7 @@ void	*ft_realloc(void *ptr, int new_size) {
 		return NULL;
 	}
 
-	header = (t_header *)ptr - 1;
+	header = ((t_header *)ptr) - 1;
 	old_size = header->size;
 
 	new_ptr = ft_malloc(new_size);

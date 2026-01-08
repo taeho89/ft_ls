@@ -5,7 +5,12 @@ CFLAGS= -g
 
 SRC_DIR = srcs/
 SRCS =	ft_ls.c	\
-		loop.c
+		loop.c	\
+		vector.c	\
+		allocator.c	\
+		utils.c		\
+		output.c	\
+		sort.c	
 
 OBJ_DIR = objs/
 OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))

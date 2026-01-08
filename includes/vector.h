@@ -10,4 +10,8 @@ struct s_vector {
 	int 	size;
 };
 
+void	push_back(t_vector *v, void *value);
+void	vector_init(t_vector *v, int element_size);
+void	swap(t_vector *v, int idx1, int idx2);
+
 #endif
