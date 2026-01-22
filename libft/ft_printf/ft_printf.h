@@ -6,7 +6,7 @@
 /*   By: takwak <takwak@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 20:54:11 by takwak            #+#    #+#             */
-/*   Updated: 2024/10/19 06:38:00 by takwak           ###   ########.fr       */
+/*   Updated: 2026/01/22 15:38:50 by takwak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ typedef struct s_printf
 }			t_printf;
 int			ft_adrlen(size_t n);
 int			ft_check_flag(const char *s, t_printf *info);
-int			ft_check_width(const char *s, t_printf *info);
-int			ft_check_prec(const char *s, t_printf *info);
+int			ft_check_width(const char *s, va_list ap, t_printf *info);
+int			ft_check_prec(const char *s, va_list ap, t_printf *info);
 int			ft_check_type(const char *s, va_list ap, t_printf *info);
 size_t		ft_default_print(t_printf *info);
 int			ft_error(const char *s);

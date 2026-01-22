@@ -6,7 +6,7 @@
 /*   By: takwak <takwak@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/07 21:23:04 by takwak            #+#    #+#             */
-/*   Updated: 2024/10/22 21:24:01 by takwak           ###   ########.fr       */
+/*   Updated: 2026/01/22 15:41:07 by takwak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ int	ft_printf(const char *format_s, ...)
 			info = ft_init_struct(info);
 			format_s++;
 			format_s += ft_check_flag(format_s, info);
-			format_s += ft_check_width(format_s, info);
-			format_s += ft_check_prec(format_s, info);
+			format_s += ft_check_width(format_s, ap, info);
+			format_s += ft_check_prec(format_s, ap, info);
 			format_s += ft_check_type(format_s, ap, info);
 			ft_print_arg(info, &total_len);
 			free(info);

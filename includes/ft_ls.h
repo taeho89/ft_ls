@@ -37,6 +37,7 @@ void	loop(t_rts *rts, char *path);
 
 /* utils.c */
 char	*join_path(char *front, char *back);
+int		ft_numlen(size_t num);
 
 /* output.c */
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v);

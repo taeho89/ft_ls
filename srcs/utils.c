@@ -14,3 +14,14 @@ char	*join_path(char *front, char *back) {
 	}
 	return new_path;
 }
+
+int	ft_numlen(size_t num) {
+	int	len;
+
+	len = 0;
+	while (num) {
+		num = num / 10;
+		len++;
+	}
+	return len;
+}

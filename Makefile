@@ -16,13 +16,16 @@ OBJ_DIR = objs/
 OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 
 LIBFT_DIR = libft
-LIBFT = ft
+LIBFT_NAME = ft
+LIBFT_A = $(LIBFT_DIR)/lib$(LIBFT_NAME).a
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(LIBFT_A)
+	$(CC) $(CFLAGS) $^ -L$(LIBFT_DIR) -l$(LIBFT_NAME) -o $@
+
+$(LIBFT_A):
 	make -C $(LIBFT_DIR)
-	$(CC) $(CFLAGS) $^ -L$(LIBFT_DIR) -l$(LIBFT) -o $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -31,11 +34,14 @@ $(OBJ_DIR):
 	mkdir -p $@
 
 clean:
-	make -C $(LIBFT_DIR) clean
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	make -C $(LIBFT_DIR) fclean
 	rm -rf $(NAME)
 
+fclean_all: fclean
+	make -C $(LIBFT_DIR) fclean
+
 re: fclean all
+
+.PHONY: all clean fclean fclean_all re

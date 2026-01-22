@@ -22,7 +22,6 @@ void	sort(t_rts *rts, t_vector *v) {
 			int	flag = 1;
 
 			while (flag) {
-				printf("\n==================\n");
 				flag = 0;
 				for (int i = 0; i < v->size; i++) {
 					st1 = ((t_stat *)v->arr)[i];
