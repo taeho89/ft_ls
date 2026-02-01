@@ -6,13 +6,14 @@
 # include "../includes/vector.h"
 # include <stdint.h>
 # include <inttypes.h>
+# include <errno.h>
 
 typedef struct s_rts 	t_rts;
 typedef struct s_stat	t_stat;
 
 /* Runtime State */
 struct s_rts {
-	t_vector	v;
+	t_vector	target;
 
 	/* Option bit field */
 	unsigned char
@@ -36,6 +37,7 @@ struct s_stat {
 void	loop(t_rts *rts, char *path);
 
 /* utils.c */
+void	parse_opt(t_rts *rts, int ac, char **av);
 char	*join_path(char *front, char *back);
 int		ft_numlen(size_t num);
 

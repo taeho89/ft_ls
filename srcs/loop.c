@@ -16,6 +16,10 @@ void	loop(t_rts *rts, char *path) {
 	vector_init(&v, sizeof(t_stat));
 	total_block = 0;
 	dir = opendir(path);
+	if (!dir) {
+		perror("opendir");
+	}
+	errno = 0;
 	cur = readdir(dir);
 	while (cur) {
 		struct stat	statbuf;
@@ -35,6 +39,9 @@ void	loop(t_rts *rts, char *path) {
 		total_block += statbuf.st_blocks / 2;
 		free(next_path);
 		cur = readdir(dir);
+	}
+	if (errno != 0) {
+		perror("readdir");
 	}
 
 	// TODO: sorting && printing
