@@ -1,35 +1,54 @@
 #include "../includes/ft_ls.h"
 
+t_print_util	get_print_util_info(t_vector *v);
+
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
-	t_stat	st;
+	t_stat			st;
+	t_print_util	pu;
 
 	if (rts->opt_recursive) {
 		ft_printf("%s:\n", cur_path);
 	}
 
-	ft_printf("total %d\n", total_block);
-	int		link_len;
-	int		uid_len;
-	int		gid_len;
-	int		file_size_len;
 	if (rts->opt_list) {
+		pu = get_print_util_info(v);
+
+		ft_printf("total %d\n", total_block);
 		for (int i = 0; i < v->size; i++) {
 			st = ((t_stat *)v->arr)[i];
-			// TODO: 간격 조정
-			ft_printf("%10s %*u %*s %*s %*d %s\n", \
+			ft_printf("%10s %*u %*s %*s %*d %s %s\n", \
 					st.acl, \
-					ft_numlen(st.nlink) + 1, st.nlink, \
-					ft_strlen(st.uid), st.uid, \
-					ft_strlen(st.gid), st.gid, \
-					ft_numlen(st.file_size) + 2, st.file_size, \
-					st.filename);
+					pu.link_len, st.nlink, \
+					pu.uid_len, st.uid, \
+					pu.gid_len, st.gid, \
+					pu.file_size_len, st.file_size, \
+					st.time, st.filename);
 		}
 	}
 	else {
 		for (int i = 0; i < v->size; i++) {
 			st = ((t_stat *)v->arr)[i];
-			ft_printf("%s ", st.filename);
+			ft_printf("%s\n", st.filename);
 		}
 	}
-	ft_printf("\n");
+	// ft_printf("\n");
+}
+
+t_print_util	get_print_util_info(t_vector *v) {
+	t_stat			st;
+	t_print_util	pu;
+
+	ft_memset(&pu, 0, sizeof(pu));
+	for (int i = 0; i < v->size; i++) {
+		st = ((t_stat *)v->arr)[i];
+		if (ft_numlen(st.nlink) + 1 > pu.link_len)
+			pu.link_len = ft_numlen(st.nlink) + 1;
+		if (ft_strlen(st.uid) > pu.uid_len)
+			pu.uid_len = ft_strlen(st.uid);
+		if (ft_strlen(st.gid) > pu.gid_len)
+			pu.gid_len = ft_strlen(st.gid);
+		if (ft_numlen(st.file_size) > pu.file_size_len)
+			pu.file_size_len = ft_numlen(st.file_size);
+	}
+	return pu;
 }

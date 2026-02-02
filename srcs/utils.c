@@ -1,12 +1,23 @@
 #include "../includes/ft_ls.h"
 
-char	get_opt(char *av);
+char	get_opt(int ac, char **av, char *opt_list);
 
 void	parse_opt(t_rts *rts, int ac, char **av) {
-	for (int i = 1; i < ac; i++) {
-		switch (get_opt(av[i])) {
+	char	c;
+
+	while (1) {
+		c = get_opt(ac, av, "altrR");
+		if (!c)
+			break ;
+		switch (c) {
+			case 'a':
+				rts->opt_all = 1;
+				break;
 			case 'l':
 				rts->opt_list = 1;
+				break;
+			case 't':
+				rts->opt_time = 1;
 				break;
 			case 'r':
 				rts->opt_reverse = 1;
@@ -14,42 +25,26 @@ void	parse_opt(t_rts *rts, int ac, char **av) {
 			case 'R':
 				rts->opt_recursive = 1;
 				break;
-			case 'a':
-				rts->opt_all = 1;
-				break;
-			case 't':
-				rts->opt_time = 1;
-				break;
-			default:
-				push_back(&rts->target, &av[i]);
 		}
 	}
-
 }
 
-char	get_opt(char *av) {
-	if (av[0] != '-')
-		return 0;
+char	get_opt(int ac, char **av, char *opt_list) {
+	static int	i = 1;
+	static int	j = 1;
+	char 		*s;
 
-	if (ft_strncmp(av, "--list", 7))
-		return 'l';
-	if (ft_strncmp(av, "-l", 3))
-		return 'l';
-	if (ft_strncmp(av, "--recursive", 12))
-		return 'R';
-	if (ft_strncmp(av, "-R", 3))
-		return 'R';
-	if (ft_strncmp(av, "--reverse", 10))
-		return 'r';
-	if (ft_strncmp(av, "-r", 3))
-		return 'r';
-	if (ft_strncmp(av, "--all", 6))
-		return 'a';
-	if (ft_strncmp(av, "-a", 3))
-		return 'a';
-	if (ft_strncmp(av, "-t", 3))
-		return 't';
+	for (; i < ac; i++) {
+		s = av[i];
 
+		// POSIX 표준 및 과제 요구사항에 따라 short 옵션만 처리
+		for (; j < ft_strlen(s); j++) {
+			s = ft_strchr(opt_list, s[j]);
+			if (s) {
+				return *s;
+			}
+		}
+	}
 	return 0;
 }
 

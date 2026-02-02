@@ -7,9 +7,11 @@
 # include <stdint.h>
 # include <inttypes.h>
 # include <errno.h>
+# include <time.h>
 
-typedef struct s_rts 	t_rts;
-typedef struct s_stat	t_stat;
+typedef struct s_rts 		t_rts;
+typedef struct s_stat		t_stat;
+typedef struct s_print_util t_print_util;
 
 /* Runtime State */
 struct s_rts {
@@ -30,8 +32,15 @@ struct s_stat {
 	char			*uid;
 	char			*gid;
 	int				file_size;
-	struct timespec	time;
+	char			time[13];
 	char			filename[256];
+};
+
+struct s_print_util {
+	int	link_len;
+	int	uid_len;
+	int	gid_len;
+	int	file_size_len;
 };
 
 void	loop(t_rts *rts, char *path);

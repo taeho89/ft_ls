@@ -12,6 +12,7 @@ void	loop(t_rts *rts, char *path) {
 	t_vector		v;
 	int				total_block;
 	char 			*next_path;
+	t_stat			stat_buf;
 
 	vector_init(&v, sizeof(t_stat));
 	total_block = 0;
@@ -22,22 +23,22 @@ void	loop(t_rts *rts, char *path) {
 	errno = 0;
 	cur = readdir(dir);
 	while (cur) {
-		struct stat	statbuf;
+		struct stat	buf;
 	
 		if (!ft_strncmp(cur->d_name, ".", 1)) {
 			cur = readdir(dir);
 			continue ;
 		}
 		next_path = join_path(path, cur->d_name);
-		if (stat(next_path, &statbuf) < 0) {
+		if (stat(next_path, &buf) < 0) {
 			perror(next_path);
 		}
 
-		t_stat	stat = get_stat(cur->d_name, &statbuf);
-		// t_stat 구조체 생성
-		push_back(&v, &stat);
-		total_block += statbuf.st_blocks / 2;
+		stat_buf = get_stat(cur->d_name, &buf);
+		push_back(&v, &stat_buf);
+		total_block += buf.st_blocks / 2;
 		free(next_path);
+		errno = 0;
 		cur = readdir(dir);
 	}
 	if (errno != 0) {
@@ -63,7 +64,7 @@ void	loop(t_rts *rts, char *path) {
 }
 
 t_stat	get_stat(char *filename, struct stat *statbuf) {
-	t_stat	new_stat;
+	t_stat			new_stat;
 	struct passwd	pw;
 
 	ft_memset(&new_stat, 0, sizeof(new_stat));
@@ -98,11 +99,12 @@ t_stat	get_stat(char *filename, struct stat *statbuf) {
 		new_stat.acl[8] = 'w';
 	if (statbuf->st_mode & S_IXOTH)
 		new_stat.acl[9] = 'x';
+
 	new_stat.nlink = statbuf->st_nlink;
 	new_stat.uid = getpwuid(statbuf->st_uid)->pw_name;
 	new_stat.gid = getgrgid(statbuf->st_gid)->gr_name;
 	new_stat.file_size = statbuf->st_size;
-	new_stat.time = statbuf->st_mtim;
+	ft_memcpy(new_stat.time, ctime(&statbuf->st_mtim.tv_sec) + 4, 12);
 	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
 
 	return new_stat;
