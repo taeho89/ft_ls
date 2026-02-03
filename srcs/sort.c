@@ -1,8 +1,8 @@
 #include "../includes/ft_ls.h"
 
-int	compare_by_name(char *s1, char *s2);
+int	compare_by_name(void *s1, void *s2);
 
-void	sort(t_rts *rts, t_vector *v) {
+void	sort_files(t_rts *rts, t_vector *v) {
 	t_stat	st1;
 	t_stat	st2;
 
@@ -19,24 +19,7 @@ void	sort(t_rts *rts, t_vector *v) {
 			//
 		}
 		else {
-			int	flag = 1;
-
-			while (flag) {
-				flag = 0;
-				for (int i = 0; i < v->size; i++) {
-					st1 = ((t_stat *)v->arr)[i];
-					for (int j = i + 1; j < v->size; j++) {
-						st2 = ((t_stat *)v->arr)[j];
-						if (compare_by_name(st1.filename, st2.filename)) {
-							swap(v, i, j);
-							st1 = ((t_stat *)v->arr)[i];
-							st2 = ((t_stat *)v->arr)[j];
-							flag = 1;
-						}
-					}
-				}
-				usleep(1000);
-			}
+			sort(v, compare_by_name);
 		}
 	}
 }
@@ -46,27 +29,20 @@ void	sort(t_rts *rts, t_vector *v) {
 // }
 
 // if true: have to swap
-int	compare_by_name(char *s1, char *s2) {
-	int	s1_len;
-	int	s2_len;
-	int	max_len;
-	char	*s1_cpy;
-	char	*s2_cpy;
+int	compare_by_name(void *a, void *b) {
+	char	*s1;
+	char	*s2;
+	int		s1_len;
+	int		s2_len;
+	int		max_len;
 
-	s1_cpy = ft_strdup(s1);
-	s2_cpy = ft_strdup(s2);
-
-	for (int i = 0; s1[i]; i++) {
-		s1_cpy[i] = ft_toupper(s1_cpy[i]);
-	}
-	for (int i = 0; s2[i]; i++) {
-		s2_cpy[i] = ft_toupper(s2_cpy[i]);
-	}
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
+	s1 = ((t_stat *)a)->filename;
+	s2 = ((t_stat *)b)->filename;
+	s1_len = ft_strlen((char *)s1);
+	s2_len = ft_strlen((char *)s2);
 	max_len = s1_len > s2_len ? s1_len : s2_len;
-	if (ft_strncmp(s1_cpy, s2_cpy, max_len) == 0) {
-		return ft_strncmp(s1, s2, max_len) < 0;
+	if (ft_strncmp((char *)s1, (char *)s2, max_len) == 0) {
+		return ft_strncmp((char *)s1, (char *)s2, max_len) < 0;
 	}
-	return ft_strncmp(s1_cpy, s2_cpy, max_len) > 0;
+	return ft_strncmp((char *)s1, (char *)s2, max_len) > 0;
 }

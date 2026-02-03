@@ -31,7 +31,6 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 			ft_printf("%s\n", st.filename);
 		}
 	}
-	// ft_printf("\n");
 }
 
 t_print_util	get_print_util_info(t_vector *v) {

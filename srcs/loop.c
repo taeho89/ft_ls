@@ -24,8 +24,9 @@ void	loop(t_rts *rts, char *path) {
 	cur = readdir(dir);
 	while (cur) {
 		struct stat	buf;
-	
-		if (!ft_strncmp(cur->d_name, ".", 1)) {
+
+		// -a 옵션 없을 시 숨김파일 skip
+		if (!rts->opt_all && !ft_strncmp(cur->d_name, ".", 1)) {
 			cur = readdir(dir);
 			continue ;
 		}
@@ -46,7 +47,7 @@ void	loop(t_rts *rts, char *path) {
 	}
 
 	// TODO: sorting && printing
-	sort(rts, &v);
+	sort_files(rts, &v);
 	print_outputs(rts, path, total_block, &v);
 
 	if (rts->opt_recursive) {
@@ -55,10 +56,10 @@ void	loop(t_rts *rts, char *path) {
 
 			c = ((t_stat *)v.arr)[i];
 			if (c.acl[0] != 'd') continue ;
+			ft_printf("\n");
 			next_path = join_path(path, c.filename);
 			loop(rts, next_path);
 			free(next_path);
-			ft_printf("\n");
 		}
 	}
 }

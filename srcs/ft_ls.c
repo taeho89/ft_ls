@@ -8,10 +8,11 @@ int	main(int ac, char **av) {
 	vector_init(&rts.target, sizeof(char *));
 	parse_opt(&rts, ac, av);
 
-	// TODO: preprocess input (parse arguments)
+	save_target_file(&rts, ac, av);
 	
 	if (rts.target.size == 0) {
-		push_back(&rts.target, ".");
+		char	*s = ".";
+		push_back(&rts.target, &s);
 	}
 
 	for (int i = 0; i < rts.target.size; i++) {

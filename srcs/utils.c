@@ -7,7 +7,7 @@ void	parse_opt(t_rts *rts, int ac, char **av) {
 
 	while (1) {
 		c = get_opt(ac, av, "altrR");
-		if (!c)
+		if (c == -1)
 			break ;
 		switch (c) {
 			case 'a':
@@ -29,23 +29,44 @@ void	parse_opt(t_rts *rts, int ac, char **av) {
 	}
 }
 
+/* POSIX 표준 및 과제 요구사항에 따라 short 옵션만 처리 */
 char	get_opt(int ac, char **av, char *opt_list) {
 	static int	i = 1;
 	static int	j = 1;
 	char 		*s;
 
-	for (; i < ac; i++) {
+	while (i < ac) {
 		s = av[i];
 
-		// POSIX 표준 및 과제 요구사항에 따라 short 옵션만 처리
-		for (; j < ft_strlen(s); j++) {
-			s = ft_strchr(opt_list, s[j]);
+		if (s[0] != '-') {
+			i++;
+			continue ;
+		}
+
+		while (j < ft_strlen(s)) {
+			s = ft_strchr(opt_list, s[j++]);
 			if (s) {
 				return *s;
 			}
 		}
+		i++;
 	}
-	return 0;
+	return -1;
+}
+
+void	save_target_file(t_rts *rts, int ac, char **av) {
+	int		i;
+	char	*s;
+	
+	i = 1;
+	while (i < ac) {
+		s = av[i++];
+
+		if (s[0] == '-')
+			continue;
+
+		push_back(&rts->target, &s);
+	}
 }
 
 char	*join_path(char *front, char *back) {
