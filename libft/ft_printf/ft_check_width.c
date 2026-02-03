@@ -18,7 +18,7 @@ int	ft_check_width(const char *s, va_list ap, t_printf *info)
 
 	move = 0;
 	if (*s == '*') {
-		info->width = va_arg(ap, size_t);
+		info->width = va_arg(ap, int);
 		move++;
 		return (move);
 	}
