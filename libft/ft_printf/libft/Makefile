@@ -12,7 +12,7 @@
 MAKEFLAGS += --no-print-directory
 
 CC = cc
-FLAGS = -Wall -Werror -Wextra -std=c99
+FLAGS = -Wall -Werror -Wextra -std=c99 -g
 
 NAME = libft.a
 SRCS = ft_atoi.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalpha.c ft_isascii.c 			\
