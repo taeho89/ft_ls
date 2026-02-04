@@ -35,6 +35,7 @@ struct s_stat {
 	char			time_str[13];
 	struct timespec	time_epoch;
 	char			filename[256];
+	char			linked_filename[256];
 };
 
 struct s_print_util {

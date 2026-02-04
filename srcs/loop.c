@@ -4,7 +4,7 @@
 #include <pwd.h>
 #include <grp.h>
 
-t_stat	get_stat(char *filename, struct stat *statbuf);
+t_stat	get_stat(char *path, char *filename, struct stat *statbuf);
 
 void	loop(t_rts *rts, char *path) {
 	DIR	*dir;
@@ -31,11 +31,11 @@ void	loop(t_rts *rts, char *path) {
 			continue ;
 		}
 		next_path = join_path(path, cur->d_name);
-		if (stat(next_path, &buf) < 0) {
+		if (lstat(next_path, &buf) < 0) {
 			perror(next_path);
 		}
 
-		stat_buf = get_stat(cur->d_name, &buf);
+		stat_buf = get_stat(path, cur->d_name, &buf);
 		push_back(&v, &stat_buf);
 		total_block += buf.st_blocks / 2;
 		free(next_path);
@@ -63,9 +63,10 @@ void	loop(t_rts *rts, char *path) {
 	}
 }
 
-t_stat	get_stat(char *filename, struct stat *statbuf) {
+t_stat	get_stat(char *path, char *filename, struct stat *statbuf) {
 	t_stat			new_stat;
 	struct passwd	pw;
+	struct stat		lstat_buf;
 
 	ft_memset(&new_stat, 0, sizeof(new_stat));
 	for (int i = 0; i < 10; i++) {
@@ -108,5 +109,13 @@ t_stat	get_stat(char *filename, struct stat *statbuf) {
 	ft_memcpy(new_stat.time_str, ctime(&statbuf->st_mtim.tv_sec) + 4, 12);
 	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
 
+	if (new_stat.acl[0] == 'l') {
+		int	c;
+
+		c = readlink(join_path(path, filename), new_stat.linked_filename, sizeof(new_stat.linked_filename));
+		if (c < 0) {
+			perror("readlink");
+		}
+	}
 	return new_stat;
 }
