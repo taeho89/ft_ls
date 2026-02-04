@@ -23,7 +23,7 @@
 typedef struct s_printf
 {
 	char			flag;
-	int				width;
+	size_t			width;
 	size_t			prec;
 	int				prec_flag;
 	char			type;

@@ -46,7 +46,6 @@ void	loop(t_rts *rts, char *path) {
 		perror("readdir");
 	}
 
-	// TODO: sorting && printing
 	sort_files(rts, &v);
 	print_outputs(rts, path, total_block, &v);
 
@@ -105,7 +104,8 @@ t_stat	get_stat(char *filename, struct stat *statbuf) {
 	new_stat.uid = getpwuid(statbuf->st_uid)->pw_name;
 	new_stat.gid = getgrgid(statbuf->st_gid)->gr_name;
 	new_stat.file_size = statbuf->st_size;
-	ft_memcpy(new_stat.time, ctime(&statbuf->st_mtim.tv_sec) + 4, 12);
+	new_stat.time_epoch = statbuf->st_mtim;
+	ft_memcpy(new_stat.time_str, ctime(&statbuf->st_mtim.tv_sec) + 4, 12);
 	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
 
 	return new_stat;

@@ -22,7 +22,7 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 					pu.uid_len, st.uid, \
 					pu.gid_len, st.gid, \
 					pu.file_size_len, st.file_size, \
-					st.time, st.filename);
+					st.time_str, st.filename);
 		}
 	}
 	else {

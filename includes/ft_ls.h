@@ -32,7 +32,8 @@ struct s_stat {
 	char			*uid;
 	char			*gid;
 	int				file_size;
-	char			time[13];
+	char			time_str[13];
+	struct timespec	time_epoch;
 	char			filename[256];
 };
 
