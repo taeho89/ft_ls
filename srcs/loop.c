@@ -4,7 +4,7 @@
 #include <pwd.h>
 #include <grp.h>
 
-t_stat	get_stat(char *path, char *filename, struct stat *statbuf);
+t_stat	get_stat(char *path, char *filename);
 
 void	loop(t_rts *rts, char *path) {
 	DIR	*dir;
@@ -19,6 +19,7 @@ void	loop(t_rts *rts, char *path) {
 	dir = opendir(path);
 	if (!dir) {
 		perror("opendir");
+		return ;
 	}
 	errno = 0;
 	cur = readdir(dir);
@@ -31,11 +32,7 @@ void	loop(t_rts *rts, char *path) {
 			continue ;
 		}
 		next_path = join_path(path, cur->d_name);
-		if (lstat(next_path, &buf) < 0) {
-			perror(next_path);
-		}
-
-		stat_buf = get_stat(path, cur->d_name, &buf);
+		stat_buf = get_stat(next_path, cur->d_name);
 		push_back(&v, &stat_buf);
 		total_block += buf.st_blocks / 2;
 		free(next_path);
@@ -54,7 +51,10 @@ void	loop(t_rts *rts, char *path) {
 			t_stat	c;
 
 			c = ((t_stat *)v.arr)[i];
-			if (c.acl[0] != 'd') continue ;
+			if (c.acl[0] != 'd' \
+				|| !ft_strncmp(c.filename, ".", 2) \
+				|| !ft_strncmp(c.filename, "..", 3))
+				continue ;
 			ft_printf("\n");
 			next_path = join_path(path, c.filename);
 			loop(rts, next_path);
@@ -63,17 +63,25 @@ void	loop(t_rts *rts, char *path) {
 	}
 }
 
-t_stat	get_stat(char *path, char *filename, struct stat *statbuf) {
+t_stat	get_stat(char *path, char *filename) {
 	t_stat			new_stat;
-	struct passwd	pw;
-	struct stat		lstat_buf;
+	struct passwd	*pw;
+	struct group	*gr;
+	struct stat		stat_buf;
 
+	ft_memset(&stat_buf, 0, sizeof(stat_buf));
 	ft_memset(&new_stat, 0, sizeof(new_stat));
+	if (lstat(path, &stat_buf) < 0) {
+		perror("lstat");
+		ft_memset(new_stat.acl + 1, '?', sizeof(new_stat.acl) - 1);
+		return new_stat;
+	}
+
 	for (int i = 0; i < 10; i++) {
 		new_stat.acl[i] = '-';
 	}
 
-	switch (statbuf->st_mode & S_IFMT) {
+	switch (stat_buf.st_mode & S_IFMT) {
 		case S_IFDIR: new_stat.acl[0] = 'd'; break ;
 		case S_IFLNK: new_stat.acl[0] = 'l'; break ;
 		case S_IFSOCK: new_stat.acl[0] = 's'; break ;
@@ -82,37 +90,48 @@ t_stat	get_stat(char *path, char *filename, struct stat *statbuf) {
 		case S_IFIFO: new_stat.acl[0] = 'p'; break ;
 	}
 
-	if (statbuf->st_mode & S_IRUSR)
+	if (stat_buf.st_mode & S_IRUSR)
 		new_stat.acl[1] = 'r';
-	if (statbuf->st_mode & S_IWUSR)
+	if (stat_buf.st_mode & S_IWUSR)
 		new_stat.acl[2] = 'w';
-	if (statbuf->st_mode & S_IXUSR)
+	if (stat_buf.st_mode & S_IXUSR)
 		new_stat.acl[3] = 'x';
-	if (statbuf->st_mode & S_IRGRP)
+	if (stat_buf.st_mode & S_IRGRP)
 		new_stat.acl[4] = 'r';
-	if (statbuf->st_mode & S_IWGRP)
+	if (stat_buf.st_mode & S_IWGRP)
 		new_stat.acl[5] = 'w';
-	if (statbuf->st_mode & S_IXGRP)
+	if (stat_buf.st_mode & S_IXGRP)
 		new_stat.acl[6] = 'x';
-	if (statbuf->st_mode & S_IROTH)
+	if (stat_buf.st_mode & S_IROTH)
 		new_stat.acl[7] = 'r';
-	if (statbuf->st_mode & S_IWOTH)
+	if (stat_buf.st_mode & S_IWOTH)
 		new_stat.acl[8] = 'w';
-	if (statbuf->st_mode & S_IXOTH)
+	if (stat_buf.st_mode & S_IXOTH)
 		new_stat.acl[9] = 'x';
 
-	new_stat.nlink = statbuf->st_nlink;
-	new_stat.uid = getpwuid(statbuf->st_uid)->pw_name;
-	new_stat.gid = getgrgid(statbuf->st_gid)->gr_name;
-	new_stat.file_size = statbuf->st_size;
-	new_stat.time_epoch = statbuf->st_mtim;
-	ft_memcpy(new_stat.time_str, ctime(&statbuf->st_mtim.tv_sec) + 4, 12);
+	new_stat.nlink = stat_buf.st_nlink;
+
+	pw = getpwuid(stat_buf.st_uid);
+	if (pw)
+		new_stat.uid = pw->pw_name;
+	else
+		new_stat.uid = ft_itoa(stat_buf.st_uid);
+
+	gr = getgrgid(stat_buf.st_gid);
+	if (gr)
+		new_stat.gid = gr->gr_name;
+	else
+		new_stat.gid = ft_itoa(stat_buf.st_gid);
+
+	new_stat.file_size = stat_buf.st_size;
+	new_stat.time_epoch = stat_buf.st_mtim;
+	ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 12);
 	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
 
 	if (new_stat.acl[0] == 'l') {
 		int	c;
 
-		c = readlink(join_path(path, filename), new_stat.linked_filename, sizeof(new_stat.linked_filename));
+		c = readlink(path, new_stat.linked_filename, sizeof(new_stat.linked_filename));
 		if (c < 0) {
 			perror("readlink");
 		}
