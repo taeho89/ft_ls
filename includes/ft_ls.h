@@ -9,6 +9,14 @@
 # include <errno.h>
 # include <time.h>
 
+# define PROGNAME "ft_ls"
+
+#if defined(__GNUC__) || defined(__clang__)
+	#define ATTRIBUTE_NONNULL(args) __attribute__((nonnull args))
+#else
+	#define ATTRIBUTE_NONULL(args)
+#endif
+
 typedef struct s_rts 		t_rts;
 typedef struct s_stat		t_stat;
 typedef struct s_print_util t_print_util;
@@ -36,6 +44,7 @@ struct s_stat {
 	struct timespec	time_epoch;
 	char			filename[256];
 	char			linked_filename[256];
+	int				blocks;
 };
 
 struct s_print_util {
@@ -57,4 +66,6 @@ void	save_target_file(t_rts *rts, int ac, char **av);
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v);
 
 void	sort_files(t_rts *rts, t_vector *v);
+
+void	error(int status, const char *argument, const char *errmsg);
 #endif

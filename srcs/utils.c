@@ -78,6 +78,7 @@ char	*join_path(char *front, char *back) {
 		return NULL;
 	}
 	new_path = ft_strjoin(tmp, back);
+	free(tmp);
 	if (!new_path) {
 		return NULL;
 	}

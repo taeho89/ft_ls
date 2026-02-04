@@ -9,5 +9,6 @@ typedef struct s_header {
 
 void	*ft_malloc(int size);
 void	*ft_realloc(void *ptr, int new_size);
+void	ft_free(void *ptr);
 
 #endif

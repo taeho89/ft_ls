@@ -1,15 +1,17 @@
 #include "../includes/vector.h"
 #include "../includes/allocator.h"
-#include <stdlib.h>
-#include "../libft/libft.h"
 
 void	quick_sort(t_vector *v, int comp(void *a, void *b), int left, int right);
 
-void	vector_init(t_vector *v, int element_size) {
+void	vector_ctor(t_vector *v, int element_size) {
 	v->element_size = element_size;
 	v->capacity = 4;
 	v->size = 0;
 	v->arr = ft_malloc(v->capacity * v->element_size);
+}
+
+void	vector_dtor(t_vector *v) {
+	ft_free(v->arr);
 }
 
 void	push_back(t_vector *v, void *value) {
@@ -27,16 +29,17 @@ void	push_back(t_vector *v, void *value) {
 }
 
 void	swap(t_vector *v, int idx1, int idx2) {
-	void	*tmp;
-
-	tmp = malloc(v->element_size);
-	if (!tmp) {
-		// TODO: 에러 처리 고민 (still reachable)
-		exit(1);
+	char	*ptr1;
+	char	*ptr2;
+	char	tmp;
+	
+	ptr1 = (char *)v->arr + idx1 * v->element_size;
+	ptr2 = (char *)v->arr + idx2 * v->element_size;
+	for (int i = 0; i < v->element_size; i++) {
+		tmp = ptr1[i];
+		ptr1[i] = ptr2[i];
+		ptr2[i] = tmp;
 	}
-	ft_memcpy(tmp, v->arr + idx1 * v->element_size, v->element_size);
-	ft_memcpy(v->arr + idx1 * v->element_size, v->arr + idx2 * v->element_size, v->element_size);
-	ft_memcpy(v->arr + idx2 * v->element_size, tmp, v->element_size);
 }
 
 void	sort(t_vector *v, int comp(void *a, void *b)) {

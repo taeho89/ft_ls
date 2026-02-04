@@ -11,7 +11,8 @@ struct s_vector {
 };
 
 void	push_back(t_vector *v, void *value);
-void	vector_init(t_vector *v, int element_size);
+void	vector_ctor(t_vector *v, int element_size);
+void	vector_dtor(t_vector *v);
 void	swap(t_vector *v, int idx1, int idx2);
 void	sort(t_vector *v, int comp(void *a, void *b));
 

@@ -1,6 +1,7 @@
 #include "../includes/ft_ls.h"
 
-t_print_util	get_print_util_info(t_vector *v);
+t_print_util	get_print_util_info(t_vector *v)
+	ATTRIBUTE_NONNULL((1));
 
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 	t_stat			st;

@@ -2,10 +2,9 @@
 
 int	main(int ac, char **av) {
 	t_rts	rts;
-	char	*path;
 
 	ft_memset(&rts, 0, sizeof(rts));
-	vector_init(&rts.target, sizeof(char *));
+	vector_ctor(&rts.target, sizeof(char *));
 	parse_opt(&rts, ac, av);
 
 	save_target_file(&rts, ac, av);
@@ -19,5 +18,6 @@ int	main(int ac, char **av) {
 		loop(&rts, ((char **)rts.target.arr)[i]);
 	}
 
+	vector_dtor(&rts.target);
 	return 0;
 }

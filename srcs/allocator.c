@@ -41,3 +41,10 @@ void	*ft_realloc(void *ptr, int new_size) {
 
 	return new_ptr;
 }
+
+void	ft_free(void *ptr) {
+	t_header	*header;
+
+	header = ((t_header *)ptr) - 1;
+	free(header);
+}

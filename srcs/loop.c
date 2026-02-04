@@ -14,18 +14,21 @@ void	loop(t_rts *rts, char *path) {
 	char 			*next_path;
 	t_stat			stat_buf;
 
-	vector_init(&v, sizeof(t_stat));
+	vector_ctor(&v, sizeof(t_stat));
 	total_block = 0;
 	dir = opendir(path);
 	if (!dir) {
-		perror("opendir");
+		if (rts->opt_recursive)
+			error(0, path, "cannot open directory");
+		else {
+			vector_dtor(&v);
+			error(2, path, "cannot open directory");
+		}
 		return ;
 	}
 	errno = 0;
 	cur = readdir(dir);
 	while (cur) {
-		struct stat	buf;
-
 		// -a 옵션 없을 시 숨김파일 skip
 		if (!rts->opt_all && !ft_strncmp(cur->d_name, ".", 1)) {
 			cur = readdir(dir);
@@ -34,13 +37,18 @@ void	loop(t_rts *rts, char *path) {
 		next_path = join_path(path, cur->d_name);
 		stat_buf = get_stat(next_path, cur->d_name);
 		push_back(&v, &stat_buf);
-		total_block += buf.st_blocks / 2;
+		total_block += stat_buf.blocks / 2;
 		free(next_path);
 		errno = 0;
 		cur = readdir(dir);
 	}
 	if (errno != 0) {
-		perror("readdir");
+		vector_dtor(&v);
+		error(2, path, "cannot read directory");
+	}
+	if (closedir(dir)) {
+		vector_dtor(&v);
+		error(2, path, "cannot close directory");
 	}
 
 	sort_files(rts, &v);
@@ -61,6 +69,7 @@ void	loop(t_rts *rts, char *path) {
 			free(next_path);
 		}
 	}
+	vector_dtor(&v);
 }
 
 t_stat	get_stat(char *path, char *filename) {
@@ -136,5 +145,7 @@ t_stat	get_stat(char *path, char *filename) {
 			perror("readlink");
 		}
 	}
+
+	new_stat.blocks = stat_buf.st_blocks;
 	return new_stat;
 }
