@@ -60,7 +60,7 @@ void	loop(t_rts *rts, char *path);
 void	parse_opt(t_rts *rts, int ac, char **av);
 char	*join_path(char *front, char *back);
 int		ft_numlen(size_t num);
-void	save_target_file(t_rts *rts, int ac, char **av);
+void	save_target_files(t_rts *rts, int ac, char **av);
 
 /* output.c */
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v);

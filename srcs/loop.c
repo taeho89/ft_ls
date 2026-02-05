@@ -14,7 +14,9 @@ void	loop(t_rts *rts, char *path) {
 	char 			*next_path;
 	t_stat			stat_buf;
 
-	vector_ctor(&v, sizeof(t_stat));
+	if (vector_ctor(&v, sizeof(t_stat)) == NULL) {
+		error(2, NULL, "failed to create vector");
+	}
 	total_block = 0;
 	dir = opendir(path);
 	if (!dir) {
@@ -35,6 +37,9 @@ void	loop(t_rts *rts, char *path) {
 			continue ;
 		}
 		next_path = join_path(path, cur->d_name);
+		if (!next_path) {
+			error(2, NULL, "failed malloc");
+		}
 		stat_buf = get_stat(next_path, cur->d_name);
 		push_back(&v, &stat_buf);
 		total_block += stat_buf.blocks / 2;
@@ -65,6 +70,9 @@ void	loop(t_rts *rts, char *path) {
 				continue ;
 			ft_printf("\n");
 			next_path = join_path(path, c.filename);
+			if (!next_path) {
+				error(2, NULL, "failed malloc");
+			}
 			loop(rts, next_path);
 			free(next_path);
 		}
@@ -81,7 +89,7 @@ t_stat	get_stat(char *path, char *filename) {
 	ft_memset(&stat_buf, 0, sizeof(stat_buf));
 	ft_memset(&new_stat, 0, sizeof(new_stat));
 	if (lstat(path, &stat_buf) < 0) {
-		perror("lstat");
+		error(0, path, "failed lstat");
 		ft_memset(new_stat.acl + 1, '?', sizeof(new_stat.acl) - 1);
 		return new_stat;
 	}
@@ -142,7 +150,7 @@ t_stat	get_stat(char *path, char *filename) {
 
 		c = readlink(path, new_stat.linked_filename, sizeof(new_stat.linked_filename));
 		if (c < 0) {
-			perror("readlink");
+			error(0, path, "failed readlink");
 		}
 	}
 

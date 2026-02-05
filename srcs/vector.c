@@ -3,11 +3,15 @@
 
 void	quick_sort(t_vector *v, int comp(void *a, void *b), int left, int right);
 
-void	vector_ctor(t_vector *v, int element_size) {
+t_vector *vector_ctor(t_vector *v, int element_size) {
 	v->element_size = element_size;
 	v->capacity = 4;
 	v->size = 0;
 	v->arr = ft_malloc(v->capacity * v->element_size);
+	if (!v->arr) {
+		return NULL;
+	}
+	return v;
 }
 
 void	vector_dtor(t_vector *v) {
@@ -42,11 +46,7 @@ void	swap(t_vector *v, int idx1, int idx2) {
 	}
 }
 
-void	sort(t_vector *v, int comp(void *a, void *b)) {
-	quick_sort(v, comp, 0, v->size - 1);
-}
-
-void	quick_sort(t_vector *v, int comp(void *a, void *b), int left, int right) {
+void	sort(t_vector *v, int comp(void *a, void *b), int left, int right) {
 	int	pivot;
 	int	low;
 	int	high;	
@@ -107,6 +107,6 @@ void	quick_sort(t_vector *v, int comp(void *a, void *b), int left, int right) {
 	ft_printf("\n");
 #endif
 
-	quick_sort(v, comp, left, high - 1);
-	quick_sort(v, comp, high + 1, right);
+	sort(v, comp, left, high - 1);
+	sort(v, comp, high + 1, right);
 }

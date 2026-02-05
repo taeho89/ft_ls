@@ -8,15 +8,15 @@ int	compare_by_time(void *a, void *b);
 void	sort_files(t_rts *rts, t_vector *v) {
 	if (rts->opt_time) {
 		if (rts->opt_reverse)
-			sort(v, compare_by_time_rev);
+			sort(v, compare_by_time_rev, 0, v->size - 1);
 		else
-			sort(v, compare_by_time);
+			sort(v, compare_by_time, 0, v->size - 1);
 	}
 	else {
 		if (rts->opt_reverse)
-			sort(v, compare_by_name_rev);
+			sort(v, compare_by_name_rev, 0, v->size - 1);
 		else
-			sort(v, compare_by_name);
+			sort(v, compare_by_name, 0, v->size - 1);
 	}
 }
 

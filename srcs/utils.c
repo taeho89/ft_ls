@@ -54,7 +54,7 @@ char	get_opt(int ac, char **av, char *opt_list) {
 	return -1;
 }
 
-void	save_target_file(t_rts *rts, int ac, char **av) {
+void	save_target_files(t_rts *rts, int ac, char **av) {
 	int		i;
 	char	*s;
 	
