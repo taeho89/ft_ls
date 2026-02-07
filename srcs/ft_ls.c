@@ -4,6 +4,7 @@ int	main(int ac, char **av) {
 	t_rts	rts;
 
 	ft_memset(&rts, 0, sizeof(rts));
+	arena_init();
 
 	if (vector_ctor(&rts.target, sizeof(char *)) == NULL) {
 		error(2, NULL, "failed to create vector");
@@ -22,6 +23,7 @@ int	main(int ac, char **av) {
 		loop(&rts, ((char **)rts.target.arr)[i]);
 	}
 
-	vector_dtor(&rts.target);
+	// vector_dtor(&rts.target);
+	arena_free();
 	return 0;
 }

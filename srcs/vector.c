@@ -7,16 +7,16 @@ t_vector *vector_ctor(t_vector *v, int element_size) {
 	v->element_size = element_size;
 	v->capacity = 4;
 	v->size = 0;
-	v->arr = ft_malloc(v->capacity * v->element_size);
+	v->arr = ft_xmalloc(v->capacity * v->element_size);
 	if (!v->arr) {
 		return NULL;
 	}
 	return v;
 }
 
-void	vector_dtor(t_vector *v) {
-	ft_free(v->arr);
-}
+// void	vector_dtor(t_vector *v) {
+// 	ft_free(v->arr);
+// }
 
 void	push_back(t_vector *v, void *value) {
 	if (v->size == v->capacity) {
