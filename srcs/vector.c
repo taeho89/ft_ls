@@ -14,10 +14,6 @@ t_vector *vector_ctor(t_vector *v, int element_size) {
 	return v;
 }
 
-// void	vector_dtor(t_vector *v) {
-// 	ft_free(v->arr);
-// }
-
 void	push_back(t_vector *v, void *value) {
 	if (v->size == v->capacity) {
 		v->capacity *= 2;
@@ -54,58 +50,27 @@ void	sort(t_vector *v, int comp(void *a, void *b), int left, int right) {
 	if (left >= right)
 		return ;
 
-#ifdef DEBUG
-# include "../includes/ft_ls.h"
-	t_stat	st;
-
-	ft_printf("====== DEBUG BEFORE SORTING =======\n");
-	ft_printf("left: %d, right: %d\n", left, right);
-	for (int i = 0; i < v->size; i++) {
-		st = ((t_stat *)v->arr)[i];
-		ft_printf("%d, %s\n", st.time_epoch, st.filename);
-	}
-	ft_printf("\n");
-#endif
-
 	pivot = left;
 	low = left + 1;
 	high = right;
 	while (low <= high) {
 		// compare(v->arr[low], v->arr[pivot]) => low < pivot => low++
-		while (low <= right && !comp(v->arr + v->element_size * low, v->arr + v->element_size * pivot))
+		while (low <= right	\
+			&& !comp(v->arr + v->element_size * low, v->arr + v->element_size * pivot)) {
 			low++;
+		}
 		// compare(v->arr[high], v->arr[pivot]) => high > pivot => high--
-		while (high >= left + 1 && comp(v->arr + v->element_size * high, v->arr + v->element_size * pivot))
+		while (high >= left + 1	\
+			&& comp(v->arr + v->element_size * high, v->arr + v->element_size * pivot)) {
 			high--;
+		}
 
 		if (low < high) {
 			swap(v, low, high);
-#ifdef DEBUG
-	ft_printf("====== SWAP =======\n");
-	ft_printf("low: %d, high: %d\n", low, high);
-	st = ((t_stat *)v->arr)[low];
-	ft_printf("%d, %s\n", st.time_epoch, st.filename);
-	st = ((t_stat *)v->arr)[high];
-	ft_printf("%d, %s\n", st.time_epoch, st.filename);
-	ft_printf("\n");
-#endif
 		}
 	}
 
-#ifdef DEBUG
-	ft_printf("pivot: %d, high: %d\n", pivot, high);
-#endif
 	swap(v, pivot, high);
-
-#ifdef DEBUG
-	ft_printf("====== DEBUG AFTER SORTING =======\n");
-	ft_printf("left: %d, right: %d\n", left, right);
-	for (int i = 0; i < v->size; i++) {
-		st = ((t_stat *)v->arr)[i];
-		ft_printf("%d, %s\n", st.time_epoch, st.filename);
-	}
-	ft_printf("\n");
-#endif
 
 	sort(v, comp, left, high - 1);
 	sort(v, comp, high + 1, right);

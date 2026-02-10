@@ -17,6 +17,7 @@ void	loop(t_rts *rts, char *path) {
 	if (vector_ctor(&v, sizeof(t_stat)) == NULL) {
 		error(2, NULL, "failed to create vector");
 	}
+
 	t_arena_cursor	cursor = get_arena_cursor();
 	total_block = 0;
 	dir = opendir(path);
@@ -24,7 +25,6 @@ void	loop(t_rts *rts, char *path) {
 		if (rts->opt_recursive)
 			error(0, path, "cannot open directory");
 		else {
-			// vector_dtor(&v);
 			error(2, path, "cannot open directory");
 		}
 		return ;
@@ -49,11 +49,9 @@ void	loop(t_rts *rts, char *path) {
 		cur = readdir(dir);
 	}
 	if (errno != 0) {
-		// vector_dtor(&v);
 		error(2, path, "cannot read directory");
 	}
 	if (closedir(dir)) {
-		// vector_dtor(&v);
 		error(2, path, "cannot close directory");
 	}
 
@@ -79,7 +77,6 @@ void	loop(t_rts *rts, char *path) {
 		}
 	}
 	arena_rewind(cursor);
-	// vector_dtor(&v);
 }
 
 t_stat	get_stat(char *path, char *filename) {

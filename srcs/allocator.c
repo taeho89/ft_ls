@@ -10,7 +10,7 @@ static inline size_t get_unusing_size(t_block *block) {
 }
 
 static inline size_t align_size(size_t size) {
-    return (size + (ALIGN - 1)) & ~(ALIGN - 1);
+	return (size + (ALIGN - 1)) & ~(ALIGN - 1);
 }
 
 static	t_block	*g_arena_block = NULL;
@@ -104,7 +104,6 @@ void	*ft_realloc(void *ptr, size_t new_size) {
 	for (int i = 0; i < copy_size; i++) {
 		((char *)new_ptr)[i] = ((char *)ptr)[i];
 	}
-	// free(header);
 
 	return new_ptr;
 }

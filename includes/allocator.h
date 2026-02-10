@@ -22,7 +22,6 @@ typedef struct s_arena_cursor {
 
 void	*ft_xmalloc(size_t size);
 void	*ft_realloc(void *ptr, size_t new_size);
-// void	ft_free(void *ptr);
 
 void			arena_init();
 void			arena_free();

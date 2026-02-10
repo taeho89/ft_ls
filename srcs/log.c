@@ -10,6 +10,7 @@ void	error(int status, const char *argument, const char *errmsg) {
 		write(2, argument, ft_strlen(argument));
 	write(2, "\': ", 3);
 	write(2, strerror(errno), ft_strlen(strerror(errno)));
+	write(2, "\n", 1);
 	
 	if (status)
 		exit(status);
