@@ -10,6 +10,7 @@
 # include <time.h>
 
 # define PROGNAME "ft_ls"
+# define MONTHS_6 (60 * 60 * 24 * 30 * 6)
 
 #if defined(__GNUC__) || defined(__clang__)
 	#define ATTRIBUTE_NONNULL(args) __attribute__((nonnull args))

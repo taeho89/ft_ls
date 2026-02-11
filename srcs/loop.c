@@ -110,20 +110,41 @@ t_stat	get_stat(char *path, char *filename) {
 		new_stat.acl[1] = 'r';
 	if (stat_buf.st_mode & S_IWUSR)
 		new_stat.acl[2] = 'w';
-	if (stat_buf.st_mode & S_IXUSR)
-		new_stat.acl[3] = 'x';
+	if (stat_buf.st_mode & S_ISUID) {
+		if (stat_buf.st_mode & S_IXUSR)
+			new_stat.acl[3] = 's';
+		else
+			new_stat.acl[3] = 'S';
+	} else {
+		if (stat_buf.st_mode & S_IXUSR)
+			new_stat.acl[3] = 'x';
+	}
 	if (stat_buf.st_mode & S_IRGRP)
 		new_stat.acl[4] = 'r';
 	if (stat_buf.st_mode & S_IWGRP)
 		new_stat.acl[5] = 'w';
-	if (stat_buf.st_mode & S_IXGRP)
-		new_stat.acl[6] = 'x';
+	if (stat_buf.st_mode & S_ISGID) {
+		if (stat_buf.st_mode & S_IXGRP)
+			new_stat.acl[6] = 's';
+		else
+			new_stat.acl[6] = 'S';
+	} else {
+		if (stat_buf.st_mode & S_IXGRP)
+			new_stat.acl[6] = 'x';
+	}
 	if (stat_buf.st_mode & S_IROTH)
 		new_stat.acl[7] = 'r';
 	if (stat_buf.st_mode & S_IWOTH)
 		new_stat.acl[8] = 'w';
-	if (stat_buf.st_mode & S_IXOTH)
-		new_stat.acl[9] = 'x';
+	if (stat_buf.st_mode & S_ISVTX) {
+		if (stat_buf.st_mode & S_IXOTH)
+			new_stat.acl[9] = 't';
+		else
+			new_stat.acl[9] = 'T';
+	} else {
+		if (stat_buf.st_mode & S_IXOTH)
+			new_stat.acl[9] = 'x';
+	}
 
 	new_stat.nlink = stat_buf.st_nlink;
 
@@ -139,9 +160,20 @@ t_stat	get_stat(char *path, char *filename) {
 	else
 		new_stat.gid = ft_itoa(stat_buf.st_gid);
 
+	time_t	now;
 	new_stat.file_size = stat_buf.st_size;
 	new_stat.time_epoch = stat_buf.st_mtim;
-	ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 12);
+	time(&now);
+	if (now > stat_buf.st_mtim.tv_sec && now - stat_buf.st_mtim.tv_sec > MONTHS_6) {
+		// 6개월 이상 지난 파일
+		ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 7);
+		ft_memcpy(new_stat.time_str + 7, ctime(&stat_buf.st_mtim.tv_sec) + 19, 5);
+		new_stat.time_str[12] = '\0';
+	} else {
+		// 6개월 이내 파일
+		ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 12);
+		new_stat.time_str[12] = '\0';
+	}
 	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
 
 	if (new_stat.acl[0] == 'l') {

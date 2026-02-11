@@ -73,7 +73,10 @@ char	*join_path(char *front, char *back) {
 	char	*new_path;
 	char	*tmp;
 
-	tmp = ft_strjoin(front, "/");
+	if (front[ft_strlen(front) - 1] != '/')
+		tmp = ft_strjoin(front, "/");
+	else
+		tmp = ft_strdup(front);
 	if (!tmp) {
 		return NULL;
 	}
