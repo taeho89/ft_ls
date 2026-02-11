@@ -16,9 +16,11 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 			if (st.acl[1] == '?') {
 				ft_printf("%10s %*c %*c %*c %*c %13c %s\n", \
 					st.acl, \
-					pu.link_len, '?', pu.uid_len, '?', \
-			  		pu.gid_len, '?', \
-					pu.file_size_len, '?', '?', st.filename);
+					pu.link_len, '?', \
+					pu.uid_len, '?', \
+					pu.gid_len, '?', \
+					pu.file_size_len, '?', \
+					'?', st.filename);
 				continue ;
 			}
 			ft_printf("%10s %*u %*s %*s %*d %s %s", \
