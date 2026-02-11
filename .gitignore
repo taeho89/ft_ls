@@ -1,6 +1,9 @@
 # target file
 ft_ls
 
+# test diff file
+diff_result
+
 # Prerequisites
 *.d
 
