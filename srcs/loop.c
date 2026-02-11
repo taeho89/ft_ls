@@ -4,10 +4,10 @@
 #include <pwd.h>
 #include <grp.h>
 
-t_stat	get_stat(char *path, char *filename);
+t_stat	get_stat(char *path, struct dirent *cursor);
 
 void	loop(t_rts *rts, char *path) {
-	DIR	*dir;
+	DIR				*dir;
 	struct dirent	*cur;
 	t_vector		v;
 	int				total_block;
@@ -22,13 +22,16 @@ void	loop(t_rts *rts, char *path) {
 	total_block = 0;
 	dir = opendir(path);
 	if (!dir) {
-		if (rts->opt_recursive)
-			error(0, path, "cannot open directory");
-		else {
+		if (!rts->opt_recursive)
 			error(2, path, "cannot open directory");
-		}
+		error(1, path, "cannot open directory");
 		return ;
 	}
+
+	if (rts->opt_recursive) {
+		ft_printf("%s:\n", path);
+	}
+
 	errno = 0;
 	cur = readdir(dir);
 	while (cur) {
@@ -41,7 +44,7 @@ void	loop(t_rts *rts, char *path) {
 		if (!next_path) {
 			error(2, NULL, "failed malloc");
 		}
-		stat_buf = get_stat(next_path, cur->d_name);
+		stat_buf = get_stat(next_path, cur);
 		push_back(&v, &stat_buf);
 		total_block += stat_buf.blocks / 2;
 		free(next_path);
@@ -49,7 +52,7 @@ void	loop(t_rts *rts, char *path) {
 		cur = readdir(dir);
 	}
 	if (errno != 0) {
-		error(2, path, "cannot read directory");
+		error(1, path, "reading directory");
 	}
 	if (closedir(dir)) {
 		error(2, path, "cannot close directory");
@@ -76,10 +79,11 @@ void	loop(t_rts *rts, char *path) {
 			free(next_path);
 		}
 	}
+
 	arena_rewind(cursor);
 }
 
-t_stat	get_stat(char *path, char *filename) {
+t_stat	get_stat(char *path, struct dirent *cursor) {
 	t_stat			new_stat;
 	struct passwd	*pw;
 	struct group	*gr;
@@ -88,8 +92,26 @@ t_stat	get_stat(char *path, char *filename) {
 	ft_memset(&stat_buf, 0, sizeof(stat_buf));
 	ft_memset(&new_stat, 0, sizeof(new_stat));
 	if (lstat(path, &stat_buf) < 0) {
-		error(0, path, "failed lstat");
-		ft_memset(new_stat.acl + 1, '?', sizeof(new_stat.acl) - 1);
+		error(1, path, "cannot access");
+		// TODO: testing this case
+		if (cursor->d_type == DT_REG)
+			new_stat.acl[0] = '-';
+		if (cursor->d_type == DT_LNK)
+			new_stat.acl[0] = 'l';
+		if (cursor->d_type == DT_DIR)
+			new_stat.acl[0] = 'd';
+		if (cursor->d_type == DT_CHR)
+			new_stat.acl[0] = 'c';
+		if (cursor->d_type == DT_BLK)
+			new_stat.acl[0] = 'b';
+		if (cursor->d_type == DT_FIFO)
+			new_stat.acl[0] = 'p';
+		if (cursor->d_type == DT_SOCK)
+			new_stat.acl[0] = 's';
+		if (cursor->d_type == DT_UNKNOWN)
+			new_stat.acl[0] = '?';
+		ft_memset(new_stat.acl + 1, '?', 9);
+		ft_strlcpy(new_stat.filename, cursor->d_name, sizeof(new_stat.filename));
 		return new_stat;
 	}
 
@@ -148,6 +170,7 @@ t_stat	get_stat(char *path, char *filename) {
 
 	new_stat.nlink = stat_buf.st_nlink;
 
+	// TODO: fix memory leak
 	pw = getpwuid(stat_buf.st_uid);
 	if (pw)
 		new_stat.uid = pw->pw_name;
@@ -160,11 +183,13 @@ t_stat	get_stat(char *path, char *filename) {
 	else
 		new_stat.gid = ft_itoa(stat_buf.st_gid);
 
-	time_t	now;
 	new_stat.file_size = stat_buf.st_size;
 	new_stat.time_epoch = stat_buf.st_mtim;
+
+	time_t	now;
 	time(&now);
-	if (now > stat_buf.st_mtim.tv_sec && now - stat_buf.st_mtim.tv_sec > MONTHS_6) {
+	if (now > stat_buf.st_mtim.tv_sec \
+		&& now - stat_buf.st_mtim.tv_sec > SIX_MONTH) {
 		// 6개월 이상 지난 파일
 		ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 7);
 		ft_memcpy(new_stat.time_str + 7, ctime(&stat_buf.st_mtim.tv_sec) + 19, 5);
@@ -174,15 +199,13 @@ t_stat	get_stat(char *path, char *filename) {
 		ft_memcpy(new_stat.time_str, ctime(&stat_buf.st_mtim.tv_sec) + 4, 12);
 		new_stat.time_str[12] = '\0';
 	}
-	ft_memcpy(new_stat.filename, filename, ft_strlen(filename) + 1);
+	ft_memcpy(new_stat.filename, cursor->d_name, ft_strlen(cursor->d_name) + 1);
 
 	if (new_stat.acl[0] == 'l') {
-		int	c;
-
-		c = readlink(path, new_stat.linked_filename, sizeof(new_stat.linked_filename));
-		if (c < 0) {
-			error(0, path, "failed readlink");
-		}
+		int c = readlink(path, new_stat.linked_filename, \
+				   sizeof(new_stat.linked_filename));
+		if (c < 0)
+			error(0, path, "cannot read symbolic link");
 	}
 
 	new_stat.blocks = stat_buf.st_blocks;

@@ -7,16 +7,20 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 	t_stat			st;
 	t_print_util	pu;
 
-	if (rts->opt_recursive) {
-		ft_printf("%s:\n", cur_path);
-	}
-
 	if (rts->opt_list) {
 		pu = get_print_util_info(v);
 
 		ft_printf("total %d\n", total_block);
 		for (int i = 0; i < v->size; i++) {
 			st = ((t_stat *)v->arr)[i];
+			if (st.acl[1] == '?') {
+				ft_printf("%10s %*c %*c %*c %*c %13c %s\n", \
+					st.acl, \
+					pu.link_len, '?', pu.uid_len, '?', \
+			  		pu.gid_len, '?', \
+					pu.file_size_len, '?', '?', st.filename);
+				continue ;
+			}
 			ft_printf("%10s %*u %*s %*s %*d %s %s", \
 					st.acl, \
 					pu.link_len, st.nlink, \
@@ -24,7 +28,7 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 					pu.gid_len, st.gid, \
 					pu.file_size_len, st.file_size, \
 					st.time_str, st.filename);
-			if (st.acl[0] == 'l')
+			if (st.acl[0] == 'l' && st.linked_filename[0] != '\0')
 				ft_printf(" -> %s", st.linked_filename);
 			ft_printf("\n");
 		}
@@ -44,6 +48,8 @@ t_print_util	get_print_util_info(t_vector *v) {
 	ft_memset(&pu, 0, sizeof(pu));
 	for (int i = 0; i < v->size; i++) {
 		st = ((t_stat *)v->arr)[i];
+		if (st.acl[1] == '?')
+			continue ;
 		if (ft_numlen(st.nlink) + 1 > pu.link_len)
 			pu.link_len = ft_numlen(st.nlink);
 		if (ft_strlen(st.uid) > pu.uid_len)
@@ -52,6 +58,13 @@ t_print_util	get_print_util_info(t_vector *v) {
 			pu.gid_len = ft_strlen(st.gid);
 		if (ft_numlen(st.file_size) > pu.file_size_len)
 			pu.file_size_len = ft_numlen(st.file_size);
+	}
+	if (pu.link_len == 0) {
+		// 모든 파일이 ?인 경우
+		pu.link_len = 1;
+		pu.uid_len = 1;
+		pu.gid_len = 1;
+		pu.file_size_len = 1;
 	}
 	return pu;
 }
