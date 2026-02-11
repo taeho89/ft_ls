@@ -10,7 +10,7 @@
 # include <time.h>
 
 # define PROGNAME "ft_ls"
-# define MONTHS_6 (60 * 60 * 24 * 30 * 6)
+# define SIX_MONTH (60 * 60 * 24 * 30 * 6)
 
 #if defined(__GNUC__) || defined(__clang__)
 	#define ATTRIBUTE_NONNULL(args) __attribute__((nonnull args))
@@ -63,10 +63,14 @@ char	*join_path(char *front, char *back);
 int		ft_numlen(size_t num);
 void	save_target_files(t_rts *rts, int ac, char **av);
 
+/* end_utils.c */
+void	error(int status, const char *argument, const char *errmsg);
+void	exit_program();
+
 /* output.c */
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v);
 
+/* sort_files.c */
 void	sort_files(t_rts *rts, t_vector *v);
 
-void	error(int status, const char *argument, const char *errmsg);
 #endif

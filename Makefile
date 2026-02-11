@@ -11,7 +11,7 @@ SRCS =	ft_ls.c	\
 		utils.c		\
 		output.c	\
 		sort_files.c		\
-		log.c
+		end_utils.c
 
 OBJ_DIR = objs/
 OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))

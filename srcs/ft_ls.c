@@ -23,6 +23,5 @@ int	main(int ac, char **av) {
 		loop(&rts, ((char **)rts.target.arr)[i]);
 	}
 
-	arena_free();
-	return 0;
+	exit_program();
 }
