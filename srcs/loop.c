@@ -1,8 +1,6 @@
 #include "../includes/ft_ls.h"
 #include <dirent.h>
 #include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
 
 t_stat	get_stat(char *path, struct dirent *cursor);
 
@@ -171,17 +169,8 @@ t_stat	get_stat(char *path, struct dirent *cursor) {
 	new_stat.nlink = stat_buf.st_nlink;
 
 	// TODO: fix memory leak
-	pw = getpwuid(stat_buf.st_uid);
-	if (pw)
-		new_stat.uid = pw->pw_name;
-	else
-		new_stat.uid = ft_itoa(stat_buf.st_uid);
-
-	gr = getgrgid(stat_buf.st_gid);
-	if (gr)
-		new_stat.gid = gr->gr_name;
-	else
-		new_stat.gid = ft_itoa(stat_buf.st_gid);
+	new_stat.uid = stat_buf.st_uid;
+	new_stat.gid = stat_buf.st_gid;
 
 	new_stat.file_size = stat_buf.st_size;
 	new_stat.time_epoch = stat_buf.st_mtim;

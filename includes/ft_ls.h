@@ -38,8 +38,8 @@ struct s_rts {
 struct s_stat {
 	char			acl[10];
 	uintmax_t		nlink;
-	char			*uid;
-	char			*gid;
+	uid_t			uid;
+	gid_t			gid;
 	int				file_size;
 	char			time_str[13];
 	struct timespec	time_epoch;

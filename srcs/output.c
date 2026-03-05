@@ -1,4 +1,6 @@
 #include "../includes/ft_ls.h"
+#include <pwd.h>
+#include <grp.h>
 
 t_print_util	get_print_util_info(t_vector *v)
 	ATTRIBUTE_NONNULL((1));
@@ -6,6 +8,8 @@ t_print_util	get_print_util_info(t_vector *v)
 void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 	t_stat			st;
 	t_print_util	pu;
+	struct passwd	*pw;
+	struct group	*gr;
 
 	if (rts->opt_list) {
 		pu = get_print_util_info(v);
@@ -23,11 +27,22 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 					'?', st.filename);
 				continue ;
 			}
-			ft_printf("%10s %*u %*s %*s %*d %s %s", \
-					st.acl, \
-					pu.link_len, st.nlink, \
-					pu.uid_len, st.uid, \
-					pu.gid_len, st.gid, \
+			ft_printf("%10s %*u ", \
+					st.acl, pu.link_len, st.nlink);
+
+			pw = getpwuid(st.uid);
+			if (pw)
+				ft_printf("%*s ", pu.uid_len, pw->pw_name);
+			else
+				ft_printf("%*u ", pu.uid_len, st.uid);
+
+			gr = getgrgid(st.gid);
+			if (pw)
+				ft_printf("%*s ", pu.gid_len, gr->gr_name);
+			else
+				ft_printf("%*u ", pu.gid_len, st.gid);
+
+			ft_printf("%*d %s %s",
 					pu.file_size_len, st.file_size, \
 					st.time_str, st.filename);
 			if (st.acl[0] == 'l' && st.linked_filename[0] != '\0')
@@ -46,6 +61,8 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 t_print_util	get_print_util_info(t_vector *v) {
 	t_stat			st;
 	t_print_util	pu;
+	struct passwd	*pw;
+	struct group	*gr;
 
 	ft_memset(&pu, 0, sizeof(pu));
 	for (int i = 0; i < v->size; i++) {
@@ -54,10 +71,23 @@ t_print_util	get_print_util_info(t_vector *v) {
 			continue ;
 		if (ft_numlen(st.nlink) + 1 > pu.link_len)
 			pu.link_len = ft_numlen(st.nlink);
-		if (ft_strlen(st.uid) > pu.uid_len)
-			pu.uid_len = ft_strlen(st.uid);
-		if (ft_strlen(st.gid) > pu.gid_len)
-			pu.gid_len = ft_strlen(st.gid);
+
+		pw = getpwuid(st.uid);
+		if (pw)
+			pu.uid_len = ft_strlen(pw->pw_name) > pu.uid_len ? \
+					ft_strlen(pw->pw_name) : pu.uid_len;
+		else
+			pu.uid_len = ft_numlen(st.uid) > pu.uid_len ? \
+					ft_numlen(st.uid) : pu.uid_len;
+
+		gr = getgrgid(st.gid);
+		if (gr)
+			pu.gid_len = ft_strlen(gr->gr_name) > pu.gid_len ? \
+					ft_strlen(gr->gr_name) : pu.gid_len;
+		else
+			pu.gid_len = ft_numlen(st.gid) > pu.gid_len ? \
+					ft_numlen(st.gid) : pu.gid_len;
+
 		if (ft_numlen(st.file_size) > pu.file_size_len)
 			pu.file_size_len = ft_numlen(st.file_size);
 	}
