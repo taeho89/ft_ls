@@ -2,6 +2,8 @@
 #include <pwd.h>
 #include <grp.h>
 
+static char	first = 1;
+
 t_print_util	get_print_util_info(t_vector *v)
 	ATTRIBUTE_NONNULL((1));
 
@@ -10,6 +12,15 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 	t_print_util	pu;
 	struct passwd	*pw;
 	struct group	*gr;
+
+	if (rts->opt_recursive) {
+		if (first) {
+			ft_printf("%s:\n", cur_path);
+			first = 0;
+		}
+		else
+			ft_printf("\n%s:\n", cur_path);
+	}
 
 	if (rts->opt_list) {
 		pu = get_print_util_info(v);
@@ -37,7 +48,7 @@ void	print_outputs(t_rts *rts, char *cur_path, int total_block, t_vector *v) {
 				ft_printf("%*u ", pu.uid_len, st.uid);
 
 			gr = getgrgid(st.gid);
-			if (pw)
+			if (gr)
 				ft_printf("%*s ", pu.gid_len, gr->gr_name);
 			else
 				ft_printf("%*u ", pu.gid_len, st.gid);

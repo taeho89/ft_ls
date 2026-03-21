@@ -26,10 +26,6 @@ void	loop(t_rts *rts, char *path) {
 		return ;
 	}
 
-	if (rts->opt_recursive) {
-		ft_printf("%s:\n", path);
-	}
-
 	errno = 0;
 	cur = readdir(dir);
 	while (cur) {
@@ -68,7 +64,7 @@ void	loop(t_rts *rts, char *path) {
 				|| !ft_strncmp(c.filename, ".", 2) \
 				|| !ft_strncmp(c.filename, "..", 3))
 				continue ;
-			ft_printf("\n");
+			// ft_printf("\n");
 			next_path = join_path(path, c.filename);
 			if (!next_path) {
 				error(2, NULL, "failed malloc");
@@ -168,7 +164,6 @@ t_stat	get_stat(char *path, struct dirent *cursor) {
 
 	new_stat.nlink = stat_buf.st_nlink;
 
-	// TODO: fix memory leak
 	new_stat.uid = stat_buf.st_uid;
 	new_stat.gid = stat_buf.st_gid;
 

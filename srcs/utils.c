@@ -54,6 +54,7 @@ char	get_opt(int ac, char **av, char *opt_list) {
 	return -1;
 }
 
+/* 명령행 인자로 들어온 파일들 저장 */
 void	save_target_files(t_rts *rts, int ac, char **av) {
 	int		i;
 	char	*s;
